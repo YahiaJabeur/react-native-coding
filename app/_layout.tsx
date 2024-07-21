@@ -9,9 +9,32 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Question1 from "./Question1";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+    },
+  },
+  queryCache: new QueryCache({
+    onError: (error) =>
+      Toast.show({
+        type: "error",
+        text1: "Something is wrong!",
+        text2: error.message,
+        position: "bottom",
+      }),
+  }),
+});
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -31,7 +54,10 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Question1 />
+      <QueryClientProvider client={queryClient}>
+        <Question1 />
+        <Toast />
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }
