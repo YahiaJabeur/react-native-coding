@@ -9,6 +9,7 @@ interface HeaderProps {
   onSortIconPressed: () => void;
   onAvatarIconPressed: () => void;
 }
+
 export const Header = ({
   isDescending,
   isGrid,

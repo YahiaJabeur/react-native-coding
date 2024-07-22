@@ -3,10 +3,10 @@ import { GridItem } from "@/components/GridItem";
 import { Header } from "@/components/Header";
 import { ListItem } from "@/components/ListItem";
 import { QUERY_KEYS } from "@/constants/queries";
-import useUsers from "@/hooks/useUsers";
+import { useUsersFilter } from "@/hooks/useUsersFilter";
 import { User } from "@/types/User";
-import { useQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import React, { useMemo, useState } from "react";
 import {
   FlatList,
   ListRenderItem,
@@ -24,30 +24,25 @@ const Question1 = () => {
   const [isDescending, setDescending] = useState(false);
   const [avatarFilter, setAvatarFilter] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
-  const [usersList, setUsersList] = useState<User[]>([]);
 
   const { data: usersPageList } = useQuery({
     queryKey: [QUERY_KEYS.GET_USERS_PAGE_LIST],
     queryFn: () => getUsersPageList(),
   });
 
+  const pageUrl = useMemo(
+    () => usersPageList?.pages[pageIndex],
+    [usersPageList, pageIndex],
+  );
+
   const { data: usersPage } = useQuery({
     enabled: usersPageList !== undefined && usersPageList.pages.length > 0,
-    queryKey: [
-      QUERY_KEYS.GET_USERS_PAGE,
-      pageIndex,
-      usersPageList,
-      usersPageList?.pages[pageIndex],
-    ],
-    queryFn: () => getUsersPage(usersPageList?.pages[pageIndex] as string),
+    placeholderData: keepPreviousData,
+    queryKey: [QUERY_KEYS.GET_USERS_PAGE, pageIndex, , pageUrl],
+    queryFn: () => getUsersPage(pageUrl as string),
   });
 
-  const users = useUsers(usersList, isDescending, avatarFilter);
-
-  useEffect(() => {
-    if (usersPage === undefined) return;
-    setUsersList((prevUsers) => [...prevUsers, ...usersPage]);
-  }, [usersPage]);
+  const users = useUsersFilter(usersPage, isDescending, avatarFilter);
 
   const updatePageIndex = () => {
     if (usersPageList === undefined) return;
@@ -56,9 +51,6 @@ const Question1 = () => {
       setPageIndex(pageIndex + 1);
     }
   };
-
-  console.log("usersPageList", usersPageList);
-  console.log("usersPage", usersPage);
 
   const renderItem: ListRenderItem<User> = ({ item }) => {
     return isGrid ? (
@@ -85,7 +77,6 @@ const Question1 = () => {
           contentContainerStyle={styles.list}
           data={users}
           renderItem={renderItem}
-          // keyExtractor={({ id }) => (isGrid ? `grid${id}` : `list${id}`)}
           keyExtractor={({ id }) => id}
           onEndReached={updatePageIndex}
         />

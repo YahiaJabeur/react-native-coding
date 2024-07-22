@@ -1,8 +1,8 @@
 import { User } from "@/types/User";
 import { useMemo } from "react";
 
-const useUsers = (
-  usersList: User[],
+export const useUsersFilter = (
+  usersList: User[] | undefined,
   isDescending: boolean,
   avatarFilter: boolean,
 ) => {
@@ -37,5 +37,3 @@ const useUsers = (
 
   return users;
 };
-
-export default useUsers;
