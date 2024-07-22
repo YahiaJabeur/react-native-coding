@@ -2,23 +2,37 @@ import { User } from "@/types/User";
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 
+const placeholderImage = require("../assets/images/avatar.png");
+
 interface ListItemProps {
   item: User;
   onPressItem: () => void;
 }
 
 export const ListItem = ({ item, onPressItem }: ListItemProps) => {
+  const { first_name, last_name, backgroundColor, avatar, email } = item;
+
   return (
     <TouchableOpacity onPress={onPressItem}>
       <View
-        style={[styles.container, { backgroundColor: item.backgroundColor }]}
+        style={[
+          styles.container,
+          {
+            backgroundColor: backgroundColor ? backgroundColor : "white",
+          },
+        ]}
       >
-        <Image style={styles.avatar} source={{ uri: item.avatar }} />
+        <Image
+          style={styles.avatar}
+          source={{
+            uri: avatar || Image.resolveAssetSource(placeholderImage).uri,
+          }}
+        />
         <View style={styles.textContainer}>
           <Text>
-            {item.first_name} {item.last_name}
+            {first_name} {last_name}
           </Text>
-          <Text>{item.email}</Text>
+          <Text>{email}</Text>
         </View>
       </View>
     </TouchableOpacity>

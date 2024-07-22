@@ -71,13 +71,13 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingLeft: 10,
   },
-  icon: {
-    width: 30,
-    height: 30,
-  },
   iconsWrapper: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  icon: {
+    width: 30,
+    height: 30,
   },
 });

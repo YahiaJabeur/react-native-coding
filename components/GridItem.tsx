@@ -7,49 +7,54 @@ interface GridItemProps {
   onPressItem: () => void;
 }
 
+const placeholderImage = require("../assets/images/avatar.png");
+
 export const GridItem = ({ item, onPressItem }: GridItemProps) => {
+  const { first_name, last_name, backgroundColor, avatar, email } = item;
+
   return (
-    <TouchableOpacity onPress={onPressItem} style={styles.item}>
-      <View
-        style={[
-          styles.itemContainer,
-          { backgroundColor: item.backgroundColor },
-        ]}
-      >
-        <Image style={styles.avatar} source={{ uri: item.avatar }} />
-        <View style={styles.itemText}>
-          <Text>
-            {item.first_name} {item.last_name}
-          </Text>
-          <Text>{item.email}</Text>
-        </View>
+    <TouchableOpacity
+      onPress={onPressItem}
+      style={[
+        styles.container,
+        { backgroundColor: backgroundColor ? backgroundColor : "white" },
+      ]}
+    >
+      <Image
+        style={styles.avatar}
+        source={{
+          uri: avatar || Image.resolveAssetSource(placeholderImage).uri,
+        }}
+      />
+      <View style={styles.itemText}>
+        <Text>
+          {first_name} {last_name}
+        </Text>
+        <Text>{email}</Text>
       </View>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    alignItems: "center",
+    padding: 10,
+    margin: 10,
+    borderRadius: 10,
+  },
   title: {
     textAlign: "center",
     fontSize: 20,
     fontWeight: "bold",
     paddingVertical: 20,
   },
-  item: {
-    flex: 1,
-    margin: 10,
-  },
-  itemContainer: {
-    flex: 1,
-    flexDirection: "column",
-    alignItems: "center",
-    padding: 10,
-    borderRadius: 10,
-  },
   avatar: {
     width: 100,
     height: 100,
-    // borderRadius: 50,
+    borderRadius: 50,
   },
   itemText: {
     marginTop: 10,
